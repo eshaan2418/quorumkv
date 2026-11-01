@@ -1,0 +1,22 @@
+version: "2"
+linters:
+  default: standard
+  settings:
+    errcheck:
+      # Best-effort cleanup and response writes whose errors cannot be acted on.
+      exclude-functions:
+        - (io.Closer).Close
+        - (*os.File).Close
+        - (net.Listener).Close
+        - (net.Conn).Close
+        - (net/http.ResponseWriter).Write
+        - (*encoding/json.Encoder).Encode
+        - (*net/http.Server).Shutdown
+        - io.Copy
+        - os.RemoveAll
+        - (*github.com/eshaan2418/quorumkv/raft.FileStorage).Close
+        - (*github.com/eshaan2418/quorumkv/server.Server).Close
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters: [errcheck]
