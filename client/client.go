@@ -29,6 +29,7 @@ type Client struct {
 	attempt time.Duration
 
 	mu     sync.Mutex
+	spread bool
 	id     uint64
 	seq    uint64
 	leader string
@@ -47,6 +48,16 @@ func New(addrs []string, attemptTimeout time.Duration) *Client {
 		id:      binary.LittleEndian.Uint64(b[:]) | 1,
 		rng:     mrand.New(mrand.NewSource(int64(binary.LittleEndian.Uint64(b[:])))),
 	}
+}
+
+// SpreadReads makes each Get start at a random server instead of the
+// known leader, like a load balancer doing follower reads. With linearizable
+// read modes the server redirects to the leader; with unsafe local reads it
+// exposes stale data.
+func (c *Client) SpreadReads(on bool) {
+	c.mu.Lock()
+	c.spread = on
+	c.mu.Unlock()
 }
 
 func (c *Client) Get(ctx context.Context, key string) (value string, found bool, err error) {
@@ -78,6 +89,9 @@ func (c *Client) Do(ctx context.Context, req server.KVRequest) (server.KVRespons
 		req.ClientID, req.Seq = c.id, c.seq
 	}
 	target := c.leader
+	if req.Op == "get" && c.spread {
+		target = c.addrs[c.rng.Intn(len(c.addrs))]
+	}
 	c.mu.Unlock()
 	body, _ := json.Marshal(req)
 	backoff := 5 * time.Millisecond

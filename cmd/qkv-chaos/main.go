@@ -26,6 +26,7 @@ type summary struct {
 	Clients        int            `json:"clients"`
 	Keys           int            `json:"keys"`
 	ReadMode       string         `json:"read_mode"`
+	SpreadReads    bool           `json:"spread_reads"`
 	DurationS      float64        `json:"duration_s"`
 	Seed           int64          `json:"seed"`
 	Ops            int            `json:"ops_recorded"`
@@ -62,6 +63,7 @@ func run() (code int) {
 	port := flag.Int("port", 17000, "base port")
 	out := flag.String("out", "", "write summary JSON here")
 	pidFile := flag.String("pidfile", "", "append started PIDs here")
+	spread := flag.Bool("spread-reads", true, "send each GET to a random server (follower-read load balancing)")
 	flag.Parse()
 
 	dir, err := os.MkdirTemp("", "qkv-chaos-")
@@ -81,7 +83,7 @@ func run() (code int) {
 	now := func() int64 { return int64(time.Since(start)) }
 	var mu sync.Mutex
 	var history []lin.Op
-	sum := summary{Nodes: *n, Clients: *clients, Keys: *keys, ReadMode: *readMode, Seed: *seed, Faults: map[string]int{}}
+	sum := summary{Nodes: *n, Clients: *clients, Keys: *keys, ReadMode: *readMode, SpreadReads: *spread, Seed: *seed, Faults: map[string]int{}}
 
 	stop := make(chan struct{})
 	var wg sync.WaitGroup
@@ -91,6 +93,7 @@ func run() (code int) {
 			defer wg.Done()
 			r := rand.New(rand.NewSource(*seed + int64(i) + 1))
 			cl := client.New(c.AddrList(), 500*time.Millisecond)
+			cl.SpreadReads(*spread)
 			for k := 0; ; k++ {
 				select {
 				case <-stop:
