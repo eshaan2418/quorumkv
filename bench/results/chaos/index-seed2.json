@@ -1,0 +1,23 @@
+{
+  "nodes": 5,
+  "clients": 10,
+  "keys": 5,
+  "read_mode": "index",
+  "spread_reads": true,
+  "duration_s": 30.535875542,
+  "seed": 2,
+  "ops_recorded": 19128,
+  "ops_ok": 19128,
+  "writes_unknown_outcome": 0,
+  "reads_failed": 0,
+  "faults": {
+    "heal": 7,
+    "kill_leader": 2,
+    "kill_random": 3,
+    "partition": 5
+  },
+  "linearizable": true,
+  "checker_timeout": false,
+  "checker_ms": 28.665,
+  "verdict": "linearizable: 19128 ops on 5 keys"
+}

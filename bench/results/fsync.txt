@@ -1,0 +1,5 @@
+BenchmarkFileStorageAppendSync-9   	     200	   3171086 ns/op
+BenchmarkFileStorageAppendSync-9   	     200	   3052336 ns/op
+BenchmarkFileStorageAppendSync-9   	     200	   3092769 ns/op
+BenchmarkFileStorageAppendSync-9   	     200	   3033706 ns/op
+BenchmarkFileStorageAppendSync-9   	     200	   3087151 ns/op

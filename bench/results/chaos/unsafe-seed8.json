@@ -1,0 +1,23 @@
+{
+  "nodes": 5,
+  "clients": 10,
+  "keys": 5,
+  "read_mode": "unsafe-local",
+  "spread_reads": true,
+  "duration_s": 23.423887875,
+  "seed": 8,
+  "ops_recorded": 16225,
+  "ops_ok": 16225,
+  "writes_unknown_outcome": 0,
+  "reads_failed": 0,
+  "faults": {
+    "heal": 4,
+    "kill_leader": 1,
+    "kill_random": 4,
+    "partition": 4
+  },
+  "linearizable": false,
+  "checker_timeout": false,
+  "checker_ms": 1.789,
+  "verdict": "NOT linearizable: key \"k0\" (16225 ops on 5 keys)"
+}
